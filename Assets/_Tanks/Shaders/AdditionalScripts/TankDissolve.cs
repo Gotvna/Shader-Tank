@@ -5,7 +5,7 @@ public class TankDissolve : MonoBehaviour
 {
     [Header("Dissolve Settings")]
     public Shader dissolveShader;
-    public float dissolveDuration = 10f;
+    public float dissolveDuration = 2f;
     public Color edgeColor = new Color(0, 0.5f, 1, 1);
     public float edgeWidth = 0.1f;
 
