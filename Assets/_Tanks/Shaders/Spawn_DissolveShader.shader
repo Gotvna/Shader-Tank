@@ -50,6 +50,8 @@ Shader "Universal Render Pipeline/DissolveShader"
             SAMPLER(sampler_MainTex);
             TEXTURE2D(_DissolveTexture);
             SAMPLER(sampler_DissolveTexture);
+            TEXTURE2D(_EmissionMap);
+            SAMPLER(sampler_EmissionMap);
 
             CBUFFER_START(UnityPerMaterial)
                 float4 _MainTex_ST;
