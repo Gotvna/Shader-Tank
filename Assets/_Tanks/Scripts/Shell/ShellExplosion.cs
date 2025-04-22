@@ -4,6 +4,8 @@ namespace Tanks.Complete
 {
     public class ShellExplosion : MonoBehaviour
     {
+        public GameObject m_ExplosionPrefab;
+
         public LayerMask m_TankMask;                        // Used to filter what the explosion affects, this should be set to "Players".
         [HideInInspector] public float m_MaxLifeTime = 2f;  // The time in seconds before the shell is removed.
 
@@ -50,6 +52,27 @@ namespace Tanks.Complete
 
                 // Deal this damage to the tank.
                 targetHealth.TakeDamage (damage);
+            }
+
+            if (m_ExplosionPrefab != null)
+            {
+                GameObject explosion = Instantiate(m_ExplosionPrefab, transform.position, transform.rotation);
+                explosion.transform.SetParent(null);
+
+                ParticleSystem[] psystems = explosion.GetComponentsInChildren<ParticleSystem>();
+                float maxLifetime = 0f;
+
+                foreach (ParticleSystem ps in psystems)
+                {
+                    ps.Play();
+
+                    var main = ps.main;
+                    float lifetime = main.duration + main.startLifetime.constantMax;
+                    if (lifetime > maxLifetime)
+                        maxLifetime = lifetime;
+                }
+
+                Destroy(explosion, maxLifetime);
             }
 
             // Destroy the shell.
