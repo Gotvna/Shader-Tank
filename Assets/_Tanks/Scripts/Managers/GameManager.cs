@@ -50,6 +50,8 @@ namespace Tanks.Complete
         private int m_PlayerCount = 0;              // The number of players (2 to 4), decided from the number of PlayerData passed by the menu
         private TextMeshProUGUI m_TitleText;        // The text used to display game message. Automatically found as part of the Menu prefab
 
+        public Shader dissolveShader;
+
         private void Start()
         {
             m_CurrentState = GameState.MainMenu;
@@ -130,7 +132,17 @@ namespace Tanks.Complete
                 m_SpawnPoints[i].ControlIndex = playerData.ControlIndex;
                 m_SpawnPoints[i].m_PlayerColor = playerData.TankColor;
                 m_SpawnPoints[i].m_ComputerControlled = playerData.IsComputer;
+
+                ///////////////////////////////////
+                // Added Code for shader Project //
+                ///////////////////////////////////
+                var dissolveScript = m_SpawnPoints[i].m_Instance.AddComponent<TankDissolve>();
+
+
+                ///////////////////////////////////
             }
+
+
 
             //we delayed setup after all tanks are created as they expect to have access to all other tanks in the manager
             foreach (var tank in m_SpawnPoints)
@@ -139,6 +151,14 @@ namespace Tanks.Complete
                     continue;
                 
                 tank.Setup(this);
+
+                ///////////////////////////////////
+                // Added Code for shader Project //
+                ///////////////////////////////////
+                tank.m_Instance.GetComponent<TankDissolve>().dissolveShader = dissolveShader;
+                tank.m_Instance.GetComponent<TankDissolve>().Initialize();
+                tank.m_Instance.GetComponent<TankDissolve>().StartDissolve();
+                ///////////////////////////////////
             }
         }
 
