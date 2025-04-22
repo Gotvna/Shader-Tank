@@ -34,7 +34,9 @@ namespace Tanks.Complete
         
         private TankAI m_AI;                                    // The Tank AI script that let a tank be a bot controlled by the computer
         private InputUser m_InputUser;                          // The Input user link to that tank. Input user identify a single player in the Input system
-        
+
+        private const string COLOR_PROPERTY = "_BaseColor";
+
         public void Setup (GameManager manager)
         {
             // Get references to the components.
@@ -80,7 +82,7 @@ namespace Tanks.Complete
                     if (renderer.materials[j].name.Contains("TankColor"))
                     {
                         // change its color to the player color
-                        renderer.materials[j].color = m_PlayerColor;
+                        renderer.materials[j].SetColor(COLOR_PROPERTY, m_PlayerColor);
                     }
                 }
             }

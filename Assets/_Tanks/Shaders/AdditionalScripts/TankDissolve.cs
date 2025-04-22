@@ -1,110 +1,78 @@
-using UnityEngine;
+﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 
 public class TankDissolve : MonoBehaviour
 {
     [Header("Dissolve Settings")]
-    public Shader dissolveShader;
-    public float dissolveDuration = 2f;
-    public Color edgeColor = new Color(0, 0.5f, 1, 1);
-    public float edgeWidth = 0.1f;
+    [SerializeField] private float dissolveDuration = 1.5f;
+    [SerializeField] private AnimationCurve dissolveCurve = AnimationCurve.EaseInOut(0, 1, 1, 0); // 1→0 curve
 
-    private List<Material> m_OriginalMaterials = new List<Material>();
-    private List<Material> m_DissolveMaterials = new List<Material>();
-    private bool m_IsDissolving = false;
-    private float m_DissolveProgress = 0f;
+    private List<Material> tankMaterials = new List<Material>();
+    private const string DISSOLVE_PROPERTY = "_Amount";
+    private Coroutine dissolveRoutine;
+    private bool isInitialized = false;
 
-    public void Initialize()
+    private void Awake()
     {
         InitializeMaterials();
     }
 
     private void InitializeMaterials()
     {
-        Renderer[] renderers = GetComponentsInChildren<Renderer>(true);
+        if (isInitialized) return;
 
+        // Start fully visible in menus
+        Renderer[] renderers = GetComponentsInChildren<Renderer>(true);
         foreach (Renderer renderer in renderers)
         {
-            // Store original materials
-            foreach (Material mat in renderer.sharedMaterials)
+            foreach (Material mat in renderer.materials)
             {
-                m_OriginalMaterials.Add(new Material(mat));
-            }
-
-            // Create dissolve materials
-            foreach (Material originalMat in renderer.sharedMaterials)
-            {
-                Material dissolveMat = new Material(dissolveShader);
-                dissolveMat.CopyPropertiesFromMaterial(originalMat);
-
-                // Set dissolve properties
-                dissolveMat.SetColor("_DissolveEdgeColor", edgeColor);
-                dissolveMat.SetFloat("_DissolveEdgeWidth", edgeWidth);
-                dissolveMat.SetFloat("_DissolveAmount", 1f); // Start fully dissolved
-
-                m_DissolveMaterials.Add(dissolveMat);
+                if (mat.HasProperty(DISSOLVE_PROPERTY))
+                {
+                    tankMaterials.Add(mat);
+                    mat.SetFloat(DISSOLVE_PROPERTY, 0f); // Start fully visible
+                }
             }
         }
+        isInitialized = true;
     }
 
     public void StartDissolve()
     {
-        if (m_DissolveMaterials.Count == 0) InitializeMaterials();
 
-        m_IsDissolving = true;
-        m_DissolveProgress = 1f;
-        ApplyDissolveMaterials();
-    }
-
-    private void Update()
-    {
-        if (!m_IsDissolving) return;
-
-        m_DissolveProgress -= Time.deltaTime / dissolveDuration;
-        m_DissolveProgress = Mathf.Clamp01(m_DissolveProgress);
-
-        foreach (Material mat in m_DissolveMaterials)
+        foreach (Material mat in tankMaterials)
         {
-            mat.SetFloat("_DissolveAmount", m_DissolveProgress);
+            mat.SetFloat(DISSOLVE_PROPERTY, 1f);
         }
 
-        if (m_DissolveProgress <= 0f)
-        {
-            EndDissolve();
-        }
+        dissolveRoutine = StartCoroutine(RunDissolve());
     }
 
-    private void ApplyDissolveMaterials()
+    private IEnumerator RunDissolve()
     {
-        Renderer[] renderers = GetComponentsInChildren<Renderer>(true);
-        int matIndex = 0;
+        float elapsed = 0f;
 
-        foreach (Renderer renderer in renderers)
+        while (elapsed < dissolveDuration)
         {
-            Material[] mats = new Material[renderer.sharedMaterials.Length];
-            for (int i = 0; i < mats.Length; i++)
+            elapsed += Time.deltaTime;
+            float progress = Mathf.Clamp01(elapsed / dissolveDuration);
+            float dissolveValue = dissolveCurve.Evaluate(progress);
+
+            foreach (Material mat in tankMaterials)
             {
-                mats[i] = m_DissolveMaterials[matIndex++];
+                mat.SetFloat(DISSOLVE_PROPERTY, dissolveValue);
             }
-            renderer.materials = mats;
+
+            yield return null;
         }
-    }
 
-    private void EndDissolve()
-    {
-        m_IsDissolving = false;
-
-        Renderer[] renderers = GetComponentsInChildren<Renderer>(true);
-        int matIndex = 0;
-
-        foreach (Renderer renderer in renderers)
+        // Finalize to fully visible
+        foreach (Material mat in tankMaterials)
         {
-            Material[] mats = new Material[renderer.sharedMaterials.Length];
-            for (int i = 0; i < mats.Length; i++)
-            {
-                mats[i] = m_OriginalMaterials[matIndex++];
-            }
-            renderer.materials = mats;
+            mat.SetFloat(DISSOLVE_PROPERTY, 0f);
+
         }
     }
+
 }

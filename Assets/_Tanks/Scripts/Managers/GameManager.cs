@@ -50,7 +50,6 @@ namespace Tanks.Complete
         private int m_PlayerCount = 0;              // The number of players (2 to 4), decided from the number of PlayerData passed by the menu
         private TextMeshProUGUI m_TitleText;        // The text used to display game message. Automatically found as part of the Menu prefab
 
-        public Shader dissolveShader;
 
         private void Start()
         {
@@ -132,14 +131,6 @@ namespace Tanks.Complete
                 m_SpawnPoints[i].ControlIndex = playerData.ControlIndex;
                 m_SpawnPoints[i].m_PlayerColor = playerData.TankColor;
                 m_SpawnPoints[i].m_ComputerControlled = playerData.IsComputer;
-
-                ///////////////////////////////////
-                // Added Code for shader Project //
-                ///////////////////////////////////
-                var dissolveScript = m_SpawnPoints[i].m_Instance.AddComponent<TankDissolve>();
-
-
-                ///////////////////////////////////
             }
 
 
@@ -152,13 +143,7 @@ namespace Tanks.Complete
                 
                 tank.Setup(this);
 
-                ///////////////////////////////////
-                // Added Code for shader Project //
-                ///////////////////////////////////
-                tank.m_Instance.GetComponent<TankDissolve>().dissolveShader = dissolveShader;
-                tank.m_Instance.GetComponent<TankDissolve>().Initialize();
-                tank.m_Instance.GetComponent<TankDissolve>().StartDissolve();
-                ///////////////////////////////////
+
             }
         }
 
@@ -220,6 +205,10 @@ namespace Tanks.Complete
             m_RoundNumber++;
             m_TitleText.text = "ROUND " + m_RoundNumber;
 
+            for (int i = 0; i < m_PlayerCount; i++)
+            {
+                m_SpawnPoints[i].m_Instance.GetComponent<TankDissolve>().StartDissolve();
+            }
             // Wait for the specified length of time until yielding control back to the game loop.
             yield return m_StartWait;
         }

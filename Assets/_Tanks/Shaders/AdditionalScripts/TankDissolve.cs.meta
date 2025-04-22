@@ -4,7 +4,8 @@ MonoImporter:
   externalObjects: {}
   serializedVersion: 2
   defaultReferences:
-  - dissolveShader: {fileID: 4800000, guid: 9c7a2829a4ad86d42afcaf784d283e09, type: 3}
+  - dissolveTexture: {fileID: 2800000, guid: 322029590681d0047973d878ee71f840, type: 3}
+  - dissolveShader: {fileID: 4800000, guid: 94a091841ebd7a94dafd1e29f3ee5e93, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
