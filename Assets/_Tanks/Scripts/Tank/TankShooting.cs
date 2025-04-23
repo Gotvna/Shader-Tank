@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using UnityEngine.VFX;
 
 namespace Tanks.Complete
 {
@@ -12,6 +13,8 @@ namespace Tanks.Complete
         public AudioSource m_ShootingAudio;         // Reference to the audio source used to play the shooting audio. NB: different to the movement audio source.
         public AudioClip m_ChargingClip;            // Audio that plays when each shot is charging up.
         public AudioClip m_FireClip;                // Audio that plays when each shot is fired.
+        public GameObject m_Effect;                 // Charge particles
+        private GameObject m_ActiveEffect;
         [Tooltip("The speed in unit/second the shell have when fired at minimum charge")]
         public float m_MinLaunchForce = 5f;        // The force given to the shell if the fire button is not held.
         [Tooltip("The speed in unit/second the shell have when fired at max charge")]
@@ -107,6 +110,12 @@ namespace Tanks.Complete
             // Change the clip to the charging clip and start it playing.
             m_ShootingAudio.clip = m_ChargingClip;
             m_ShootingAudio.Play ();
+
+            // Spawn Particles
+            m_ActiveEffect = Instantiate(m_Effect, m_FireTransform);
+            m_ActiveEffect.transform.parent = m_FireTransform;
+            m_ActiveEffect.GetComponent<Renderer>().material.renderQueue = 3000;
+            m_ActiveEffect.GetComponent<VisualEffect>().SetFloat("Charge Level", 0f);
         }
 
         public void StopCharging()
@@ -137,12 +146,15 @@ namespace Tanks.Complete
                 m_CurrentLaunchForce += m_ChargeSpeed * Time.deltaTime;
 
                 m_AimSlider.value = m_CurrentLaunchForce;
+                float clamp = (m_CurrentLaunchForce - m_MinLaunchForce) / (m_MaxLaunchForce - m_MinLaunchForce);
+                m_ActiveEffect.GetComponent<VisualEffect>().SetFloat("Charge Level", clamp);
             }
             // Otherwise, if the fire button is released and the shell hasn't been launched yet...
             else if (fireAction.WasReleasedThisFrame() && !m_Fired)
             {
                 // ... launch the shell.
                 Fire ();
+                Destroy(m_ActiveEffect, 2f);
                 m_IsCharging = false;
             }
         }
@@ -175,6 +187,11 @@ namespace Tanks.Complete
                 // Change the clip to the charging clip and start it playing.
                 m_ShootingAudio.clip = m_ChargingClip;
                 m_ShootingAudio.Play ();
+
+                m_ActiveEffect = Instantiate(m_Effect, m_FireTransform);
+                m_ActiveEffect.transform.parent = m_FireTransform;
+                m_ActiveEffect.GetComponent<Renderer>().material.renderQueue = 3000;
+                m_ActiveEffect.GetComponent<VisualEffect>().SetFloat("Charge Level", 0f);
             }
             // Otherwise, if the fire button is being held and the shell hasn't been launched yet...
             else if (fireAction.IsPressed() && !m_Fired)
@@ -183,6 +200,9 @@ namespace Tanks.Complete
                 m_CurrentLaunchForce += m_ChargeSpeed * Time.deltaTime;
 
                 m_AimSlider.value = m_CurrentLaunchForce;
+
+                float clamp = (m_CurrentLaunchForce - m_MinLaunchForce) / (m_MaxLaunchForce - m_MinLaunchForce);
+                m_ActiveEffect.GetComponent<VisualEffect>().SetFloat("Charge Level", clamp);
             }
             // Otherwise, if the fire button is released and the shell hasn't been launched yet...
             else if (fireAction.WasReleasedThisFrame() && !m_Fired)
@@ -197,6 +217,8 @@ namespace Tanks.Complete
         {
             // Set the fired flag so only Fire is only called once.
             m_Fired = true;
+
+            Destroy(m_ActiveEffect);
 
             // Create an instance of the shell and store a reference to it's rigidbody.
             Rigidbody shellInstance =
