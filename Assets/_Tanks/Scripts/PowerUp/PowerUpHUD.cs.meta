@@ -1,9 +1,23 @@
 fileFormatVersion: 2
 guid: a5a3c6d9a40098844b6163099a0dfad3
-AssetOrigin:
-  serializedVersion: 1
-  productId: 46209
-  packageName: Tanks! | Complete Project
-  packageVersion: 3.0
-  assetPath: Assets/_Tanks/Scripts/PowerUp/PowerUpHUD.cs
-  uploadId: 747463
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - m_DamageReductionHUD: {fileID: 6103020118346922388, guid: 9ad06fe863d692e4a969198bd2130e8c,
+      type: 3}
+  - m_EnhancedShootingHUD: {fileID: 8791206557119173652, guid: fc7b7f2ea1b8e2949a71217d6d42bbfb,
+      type: 3}
+  - m_EnhancedSpeedHUD: {fileID: 3490176192692482045, guid: 1fb16119711fde644ab3c13dea73a863,
+      type: 3}
+  - m_EnhancedShellHUD: {fileID: 8823145779398171328, guid: 0359c7746491e7e4a889255dfd046976,
+      type: 3}
+  - m_HealingHUD: {fileID: 26534474276156039, guid: 21916af07e754774baa508caf181a2c2,
+      type: 3}
+  - m_TemporaryInvencibilityHUD: {fileID: 3069503713166740081, guid: eec776bb3b0a1004b92f888bba8d9917,
+      type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
