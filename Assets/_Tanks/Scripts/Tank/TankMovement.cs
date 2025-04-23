@@ -33,8 +33,10 @@ namespace Tanks.Complete
         private string m_MovementAxisName;          // The name of the input axis for moving forward and back.
         private string m_TurnAxisName;              // The name of the input axis for turning.
         private Rigidbody m_Rigidbody;              // Reference used to move the tank.
-        private float m_MovementInputValue;         // The current value of the movement input.
-        private float m_TurnInputValue;             // The current value of the turn input.
+        [SerializeField] private float m_MovementInputValue;         // The current value of the movement input.
+        public float MovementInputValue => m_MovementInputValue;
+        [SerializeField] private float m_TurnInputValue;             // The current value of the turn input.
+        public float TurnInputValue => m_TurnInputValue;
         private float m_OriginalPitch;              // The pitch of the audio source at the start of the scene.
         
         private InputAction m_MoveAction;             // The InputAction used to move, retrieved from TankInputUser
