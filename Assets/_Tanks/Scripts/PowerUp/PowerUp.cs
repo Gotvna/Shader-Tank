@@ -5,6 +5,7 @@ namespace Tanks.Complete
     public class PowerUp : MonoBehaviour
     {
         public enum PowerUpType { Speed, DamageReduction, ShootingBonus, Healing, Invincibility, DamageMultiplier }
+
         [Tooltip("Select the kind of Power Up that you want.")]
         [SerializeField] private PowerUpType m_PowerUpType = PowerUpType.DamageReduction;
 
@@ -33,47 +34,53 @@ namespace Tanks.Complete
         [Tooltip("Amount by which the damage will be multiplied.")]
         [SerializeField] private float m_DamageMultiplier = 2f;
 
+        private PowerUpSpawner m_Spawner;
+
+        public void SetSpawner(PowerUpSpawner spawner)
+        {
+            m_Spawner = spawner;
+        }
+
         private void Update()
         {
             // Rotates the power up game object
             transform.rotation = Quaternion.Euler(0, 50f * Time.time, 0);
         }
 
-
         private void OnTriggerEnter(Collider other)
         {
             if (other.gameObject.CompareTag("Tank"))
             {
-                // Reference to the PowerUpDetector component of the tank.
                 PowerUpDetector m_PowerUpDetector = other.gameObject.GetComponent<PowerUpDetector>();
 
-                // Checks that the tank has not picked up other power up
                 if (!m_PowerUpDetector.m_HasActivePowerUp)
                 {
-                    // The power up reduces is a shield
-                    if (m_PowerUpType == PowerUpType.DamageReduction)
-                        m_PowerUpDetector.PickUpShield(m_DamageReduction, m_DurationTime);
-                    // The power up enhances any speed stat
-                    else if (m_PowerUpType == PowerUpType.Speed)
-                        m_PowerUpDetector.PowerUpSpeed(m_SpeedBonus, m_TurnSpeedBonus, m_DurationTime);
-                    // The power up enhances any shooting stat
-                    else if (m_PowerUpType == PowerUpType.ShootingBonus)
-                        m_PowerUpDetector.PowerUpShoootingRate(m_CooldownReduction, m_DurationTime);
-                    // The power up heals the tank
-                    else if (m_PowerUpType == PowerUpType.Healing)
-                        m_PowerUpDetector.PowerUpHealing(m_HealingAmount);
-                    // The power up makes the tank invincible
-                    else if (m_PowerUpType == PowerUpType.Invincibility)
-                        m_PowerUpDetector.PowerUpInvincibility(m_DurationTime);
-                    // The power up increases the damage of the shell
-                    else if (m_PowerUpType == PowerUpType.DamageMultiplier)
-                        m_PowerUpDetector.PowerUpSpecialShell(m_DamageMultiplier);
+                    switch (m_PowerUpType)
+                    {
+                        case PowerUpType.DamageReduction:
+                            m_PowerUpDetector.PickUpShield(m_DamageReduction, m_DurationTime);
+                            break;
+                        case PowerUpType.Speed:
+                            m_PowerUpDetector.PowerUpSpeed(m_SpeedBonus, m_TurnSpeedBonus, m_DurationTime);
+                            break;
+                        case PowerUpType.ShootingBonus:
+                            m_PowerUpDetector.PowerUpShoootingRate(m_CooldownReduction, m_DurationTime);
+                            break;
+                        case PowerUpType.Healing:
+                            m_PowerUpDetector.PowerUpHealing(m_HealingAmount);
+                            break;
+                        case PowerUpType.Invincibility:
+                            m_PowerUpDetector.PowerUpInvincibility(m_DurationTime);
+                            break;
+                        case PowerUpType.DamageMultiplier:
+                            m_PowerUpDetector.PowerUpSpecialShell(m_DamageMultiplier);
+                            break;
+                    }
 
-                    // Destroys the Power Up
+                    m_Spawner?.OnPowerUpCollected();
                     Destroy(gameObject);
                 }
             }
         }
-
     }
 }
