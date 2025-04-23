@@ -51,6 +51,8 @@ public class TireTrail : MonoBehaviour
                 decal.transform.localScale = new Vector3(markWidth, 1f, markLength);
 
                 MeshRenderer renderer = decal.AddComponent<MeshRenderer>();
+                renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+                renderer.receiveShadows = false;
                 MeshFilter filter = decal.AddComponent<MeshFilter>();
                 filter.mesh = CreateQuadMesh();
 
