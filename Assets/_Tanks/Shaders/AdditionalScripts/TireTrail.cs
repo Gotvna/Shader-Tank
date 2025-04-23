@@ -21,6 +21,9 @@ public class TireTrail : MonoBehaviour
     private List<Decal> activeDecals = new List<Decal>();
     private float lastEmitTime;
 
+    private Mesh quadMesh;
+
+    void Start() { quadMesh = CreateQuadMesh(); }
     void Update()
     {
         if (ShouldEmit() && Time.time - lastEmitTime > emissionInterval)
@@ -54,7 +57,7 @@ public class TireTrail : MonoBehaviour
                 renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
                 renderer.receiveShadows = false;
                 MeshFilter filter = decal.AddComponent<MeshFilter>();
-                filter.mesh = CreateQuadMesh();
+                filter.mesh = quadMesh;
 
                 renderer.material = new Material(markMaterial);
                 activeDecals.Add(new Decal(decal, fadeDuration));

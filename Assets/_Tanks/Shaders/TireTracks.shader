@@ -9,7 +9,7 @@ Shader "Custom/TireTracks"
 
     SubShader
     {
-        Tags { "Queue"="Transparent" "RenderType"="Transparent" }
+        Tags { "Queue"="Transparent" "RenderType"="Transparent" "ForceNoShadowCasting" = "True" "IgnoreProjector" = "True"}
         Blend SrcAlpha OneMinusSrcAlpha
         ZWrite Off
         Cull Off
