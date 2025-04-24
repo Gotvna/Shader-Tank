@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.VFX;
 
 namespace Tanks.Complete
 {
@@ -57,40 +58,17 @@ namespace Tanks.Complete
             if (m_ExplosionPrefab != null)
             {
                 GameObject explosion = Instantiate(m_ExplosionPrefab, transform.position, transform.rotation);
-                explosion.transform.SetParent(null);
 
                 Vector3 spawnPos = transform.position;
 
-                Renderer[] renderers = explosion.GetComponentsInChildren<Renderer>();
-                foreach (Renderer rend in renderers)
-                {
-                    foreach (Material mat in rend.materials)
-                    {
-                        if (mat.HasProperty("_SpawnPosition"))
-                            mat.SetVector("_SpawnPosition", spawnPos);
-                        if (mat.HasProperty("_FadeDistance"))
-                            mat.SetFloat("_FadeDistance", 5f);
-                        if (mat.HasProperty("_EmissionFade"))
-                            mat.SetFloat("_EmissionFade", 1f);
-                    }
-                }
+                VisualEffect psystems = explosion.GetComponentInChildren<VisualEffect>();
+                float maxLifetime = 1f;
 
-                ParticleSystem[] psystems = explosion.GetComponentsInChildren<ParticleSystem>();
-                float maxLifetime = 0f;
+                psystems.SendEvent("Fire");
 
-                foreach (ParticleSystem ps in psystems)
-                {
-                    ps.Play();
-
-                    var main = ps.main;
-                    float lifetime = main.duration + main.startLifetime.constantMax;
-                    if (lifetime > maxLifetime)
-                        maxLifetime = lifetime;
-                }
 
                 Destroy(explosion, maxLifetime);
             }
-
 
             // Destroy the shell.
             Destroy(gameObject);
