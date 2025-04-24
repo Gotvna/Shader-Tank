@@ -24,12 +24,10 @@ namespace Tanks.Complete
             if (m_ShieldVisualEffect != null)
                 m_ShieldVisualEffect.SetActive(false);
 
-            Debug.Log("PowerUpDetector initialized");
         }
 
         public void PowerUpSpeed(float speedBoost, float turnSpeedBoost, float duration)
         {
-            Debug.Log("Activating Speed PowerUp");
             StartCoroutine(IncreaseSpeed(speedBoost, turnSpeedBoost, duration));
         }
 
@@ -43,12 +41,10 @@ namespace Tanks.Complete
             m_TankMovement.m_Speed -= speedBoost;
             m_TankMovement.m_TurnSpeed -= TurnSpeedBoost;
             m_HasActivePowerUp = false;
-            Debug.Log("Speed PowerUp expired");
         }
 
         public void PowerUpShoootingRate(float cooldownReduction, float duration)
         {
-            Debug.Log("Activating Shooting Rate PowerUp");
             StartCoroutine(IncreaseShootingRate(cooldownReduction, duration));
         }
 
@@ -62,7 +58,6 @@ namespace Tanks.Complete
                 yield return new WaitForSeconds(duration);
                 m_TankShooting.m_ShotCooldown /= cooldownReduction;
                 m_HasActivePowerUp = false;
-                Debug.Log("Shooting Rate PowerUp expired");
             }
         }
 
@@ -70,7 +65,6 @@ namespace Tanks.Complete
         {
             if (!m_TankHealth.m_HasShield)
             {
-                Debug.Log("Shield PowerUp picked up");
                 StartCoroutine(ActivateShield(shieldAmount, duration));
             }
         }
@@ -80,7 +74,6 @@ namespace Tanks.Complete
             m_HasActivePowerUp = true;
             m_PowerUpHUD.SetActivePowerUp(PowerUp.PowerUpType.DamageReduction, duration);
             m_TankHealth.ToggleShield(shieldAmount);
-            Debug.Log("Shield activated");
 
             if (m_ShieldVisualEffect != null)
             {
@@ -93,7 +86,6 @@ namespace Tanks.Complete
 
             m_TankHealth.ToggleShield(shieldAmount);
             m_HasActivePowerUp = false;
-            Debug.Log("Shield expired");
 
             if (m_ShieldVisualEffect != null)
             {
@@ -107,12 +99,10 @@ namespace Tanks.Complete
         {
             m_TankHealth.IncreaseHealth(healAmount);
             m_PowerUpHUD.SetActivePowerUp(PowerUp.PowerUpType.Healing, 1.0f);
-            Debug.Log("Healing PowerUp applied");
         }
 
         public void PowerUpInvincibility(float duration)
         {
-            Debug.Log("Invincibility PowerUp activated");
             StartCoroutine(ActivateInvincibility(duration));
         }
 
@@ -124,7 +114,6 @@ namespace Tanks.Complete
             yield return new WaitForSeconds(duration);
             m_HasActivePowerUp = false;
             m_TankHealth.ToggleInvincibility();
-            Debug.Log("Invincibility expired");
         }
 
         public void PowerUpSpecialShell(float damageMultiplier)
@@ -132,7 +121,6 @@ namespace Tanks.Complete
             m_HasActivePowerUp = true;
             m_PowerUpHUD.SetActivePowerUp(PowerUp.PowerUpType.DamageMultiplier, 0f);
             m_TankShooting.EquipSpecialShell(damageMultiplier);
-            Debug.Log("Special Shell equipped");
         }
     }
 }
