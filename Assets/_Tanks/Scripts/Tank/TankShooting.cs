@@ -14,7 +14,7 @@ namespace Tanks.Complete
         public AudioClip m_ChargingClip;            // Audio that plays when each shot is charging up.
         public AudioClip m_FireClip;                // Audio that plays when each shot is fired.
         public GameObject m_Effect;                 // Charge particles
-        private GameObject m_ActiveEffect;
+        public GameObject m_ActiveEffect;
         [Tooltip("The speed in unit/second the shell have when fired at minimum charge")]
         public float m_MinLaunchForce = 5f;        // The force given to the shell if the fire button is not held.
         [Tooltip("The speed in unit/second the shell have when fired at max charge")]

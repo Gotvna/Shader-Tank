@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using static UnityEditor.ShaderGraph.Internal.KeywordDependentCollection;
 
 namespace Tanks.Complete
 {
@@ -78,6 +79,10 @@ namespace Tanks.Complete
                 {
                     StopCoroutine(RunChromaticAberration());
                     _aberrationMaterial.SetFloat("_Intensity", 0f);
+                    if (GetComponent<TankShooting>().m_ActiveEffect != null)
+                    {
+                        Destroy(GetComponent<TankShooting>().m_ActiveEffect);
+                    }
                     OnDeath ();
                 }
             }
