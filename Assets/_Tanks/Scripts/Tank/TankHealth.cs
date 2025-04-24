@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
 
 namespace Tanks.Complete
 {
@@ -20,6 +21,16 @@ namespace Tanks.Complete
         private float m_ShieldValue;                        // Percentage of reduced damage when the tank has a shield.
         private bool m_IsInvincible;                        // Is the tank invincible in this moment?
 
+
+        /// <summary>
+        /// Added for shader project - this is to have an affect when getting hit
+        /// </summary>
+        [SerializeField] private FullScreenPassRendererFeature _aberrationFeature;
+        [SerializeField] private float _maxIntensity = 0.02f;
+        [SerializeField] private float _duration = 0.5f;
+
+        private Material _aberrationMaterial;
+
         private void Awake ()
         {
             // Set the slider max value to the max health the tank can have
@@ -39,6 +50,8 @@ namespace Tanks.Complete
             m_ShieldValue = 0;
             m_IsInvincible = false;
 
+            _aberrationMaterial = _aberrationFeature.passMaterial;
+
             // Update the health slider's value and color.
             SetHealthUI();
         }
@@ -55,9 +68,16 @@ namespace Tanks.Complete
                 // Change the UI elements appropriately.
                 SetHealthUI ();
 
+                /// <summary>
+                /// Added for shader project - this is to have an affect when getting hit
+                /// </summary>
+                StartCoroutine(RunChromaticAberration());
+
                 // If the current health is at or below zero and it has not yet been registered, call OnDeath.
                 if (m_CurrentHealth <= 0f && !m_Dead)
                 {
+                    StopCoroutine(RunChromaticAberration());
+                    _aberrationMaterial.SetFloat("_Intensity", 0f);
                     OnDeath ();
                 }
             }
@@ -122,6 +142,25 @@ namespace Tanks.Complete
 
             // Turn the tank off.
             gameObject.SetActive (false);
+        }
+
+        private IEnumerator RunChromaticAberration()
+        {
+            float elapsed = 0f;
+
+            while (elapsed < _duration)
+            {
+                float currentIntensity = Mathf.Lerp(_maxIntensity, 0f, elapsed / _duration);
+                _aberrationMaterial.SetFloat("_Intensity", currentIntensity);
+
+                _aberrationMaterial.SetVector("_Direction", new Vector2(1, 0));
+
+                elapsed += Time.deltaTime;
+                yield return null;
+            }
+
+            // Reset intensity to 0
+            _aberrationMaterial.SetFloat("_Intensity", 0f);
         }
     }
 }
