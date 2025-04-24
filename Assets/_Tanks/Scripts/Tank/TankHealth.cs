@@ -2,6 +2,7 @@
 using UnityEngine.UI;
 using System.Collections;
 using static UnityEditor.ShaderGraph.Internal.KeywordDependentCollection;
+using UnityEngine.VFX;
 
 namespace Tanks.Complete
 {
@@ -14,7 +15,7 @@ namespace Tanks.Complete
         public Color m_ZeroHealthColor = Color.red;      // The color the health bar will be when on no health.
         public GameObject m_ExplosionPrefab;                // A prefab that will be instantiated in Awake, then used whenever the tank dies.
         [HideInInspector] public bool m_HasShield;          // Has the tank picked up a shield power up?
-        
+        public VisualEffect m_HealingEffect;
         
         private AudioSource m_ExplosionAudio;               // The audio source to play when the tank explodes.
         private float m_CurrentHealth;                      // How much health the tank currently has.
@@ -94,8 +95,15 @@ namespace Tanks.Complete
             // Check if adding the amount would keep the health within the maximum limit
             if (m_CurrentHealth + amount <= m_StartingHealth)
             {
+                Debug.Log("Healing amount: " + amount);
                 // If the new health value is within the limit, add the amount
                 m_CurrentHealth += amount;
+
+                if (m_HealingEffect != null)
+                {
+                    Debug.Log("Healing effect instantiated");
+                    m_HealingEffect.SendEvent("onHeal");
+                }
             }
             else
             {
@@ -144,11 +152,6 @@ namespace Tanks.Complete
         {
             // Set the flag so that this function is only called once.
             m_Dead = true;
-
-
-            //explosion?
-            GameObject explosion = Instantiate(m_ExplosionPrefab);
-            explosion.transform.SetPositionAndRotation(transform.position, Quaternion.identity);
 
             // Turn the tank off.
             gameObject.SetActive (false);
