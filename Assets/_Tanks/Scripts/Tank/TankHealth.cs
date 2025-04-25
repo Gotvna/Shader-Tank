@@ -110,7 +110,10 @@ namespace Tanks.Complete
             else
             {
                 // If the new health exceeds the starting health, set it at the maximum
+
                 m_CurrentHealth = m_StartingHealth;
+
+                m_HealingEffect.SendEvent("onHeal");
             }
 
             // Change the UI elements appropriately.
