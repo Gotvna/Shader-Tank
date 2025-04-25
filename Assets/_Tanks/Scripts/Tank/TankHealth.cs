@@ -15,8 +15,8 @@ namespace Tanks.Complete
         public Color m_ZeroHealthColor = Color.red;      // The color the health bar will be when on no health.
         public GameObject m_ExplosionPrefab;                // A prefab that will be instantiated in Awake, then used whenever the tank dies.
         [HideInInspector] public bool m_HasShield;          // Has the tank picked up a shield power up?
-        public VisualEffect m_HealingEffect;
-        
+
+        private VisualEffect m_HealingEffect;
         private AudioSource m_ExplosionAudio;               // The audio source to play when the tank explodes.
         private float m_CurrentHealth;                      // How much health the tank currently has.
         private bool m_Dead;                                // Has the tank been reduced beyond zero health yet?
@@ -37,6 +37,7 @@ namespace Tanks.Complete
         {
             // Set the slider max value to the max health the tank can have
             m_Slider.maxValue = m_StartingHealth;
+            m_HealingEffect = GetComponent<VisualEffect>();
         }
 
         private void OnDestroy()
@@ -101,6 +102,7 @@ namespace Tanks.Complete
 
                 if (m_HealingEffect != null)
                 {
+                    
                     Debug.Log("Healing effect instantiated");
                     m_HealingEffect.SendEvent("onHeal");
                 }
@@ -152,6 +154,9 @@ namespace Tanks.Complete
         {
             // Set the flag so that this function is only called once.
             m_Dead = true;
+
+            GameObject deathSplosion = Instantiate(m_ExplosionPrefab);
+            deathSplosion.transform.SetPositionAndRotation(transform.position, Quaternion.identity);  
 
             // Turn the tank off.
             gameObject.SetActive (false);

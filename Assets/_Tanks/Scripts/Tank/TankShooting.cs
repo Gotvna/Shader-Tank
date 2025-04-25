@@ -154,7 +154,6 @@ namespace Tanks.Complete
             {
                 // ... launch the shell.
                 Fire ();
-                Destroy(m_ActiveEffect, 2f);
                 m_IsCharging = false;
             }
         }
@@ -188,10 +187,13 @@ namespace Tanks.Complete
                 m_ShootingAudio.clip = m_ChargingClip;
                 m_ShootingAudio.Play ();
 
-                m_ActiveEffect = Instantiate(m_Effect, m_FireTransform);
-                m_ActiveEffect.transform.parent = m_FireTransform;
-                m_ActiveEffect.GetComponent<Renderer>().material.renderQueue = 3000;
-                m_ActiveEffect.GetComponent<VisualEffect>().SetFloat("Charge Level", 0f);
+                if (m_ActiveEffect == null)
+                {
+                    m_ActiveEffect = Instantiate(m_Effect, m_FireTransform);
+                    m_ActiveEffect.transform.parent = m_FireTransform;
+                    m_ActiveEffect.GetComponent<Renderer>().material.renderQueue = 3000;
+                    m_ActiveEffect.GetComponent<VisualEffect>().SetFloat("Charge Level", 0f);
+                }
             }
             // Otherwise, if the fire button is being held and the shell hasn't been launched yet...
             else if (fireAction.IsPressed() && !m_Fired)
